@@ -1,0 +1,155 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void enqueue(int data[], int heap[], size_t size);
+void print(int heap[], size_t size);
+int checkHeap(int heap[], size_t size);
+void fillArray(int data[], size_t size);
+int dequeue(int heap[], size_t size);
+int checkAscending(int data[], size_t size);
+void writeInts(const char *filename, size_t size);
+void readInts(const char *filename, int data[], size_t size);
+
+int main()
+{
+    const char *filename = "C:/Users/cevey/Desktop/testData.txt";
+    size_t size = 99999, i, tempSize = size;
+    int data[size];
+    int heap[size];
+    writeInts(filename, size);
+    readInts(filename, data, size);
+    enqueue(data, heap, size);
+    for(i = 0; i < size; ++i){
+        int smallest = dequeue(heap, tempSize--);
+        data[i] = smallest;
+    }
+    printf("\nCheck array: %d", checkAscending(data, size));
+    return 0;
+}
+
+void enqueue(int data[], int heap[], size_t size){
+    int i, parentIndex, childIndex;
+    for(i = 0; i < size; ++i){
+        heap[i] = data[i];
+        if(i != 0){
+            if(i % 2 == 0)
+                parentIndex = (i / 2) - 1;
+            else
+                parentIndex = (i / 2);
+            childIndex = i;
+            while(parentIndex >= 0 && heap[childIndex] < heap[parentIndex]){
+                int temp = heap[childIndex];
+                heap[childIndex] = heap[parentIndex];
+                heap[parentIndex] = temp;
+                childIndex = parentIndex;
+                if(parentIndex % 2 == 0)
+                    parentIndex = (parentIndex / 2) - 1;
+                else
+                    parentIndex = (parentIndex / 2);
+            }
+        }
+    }
+}
+
+int dequeue(int heap[], size_t size){
+    int smallest = heap[0], parentIndex = 0, childIndex = 1;
+    heap[0] = heap[size - 1];
+    while(heap[parentIndex] > heap[childIndex] || heap[parentIndex] > heap[childIndex + 1]){
+        int temp = heap[parentIndex];
+        if(heap[childIndex] < heap[childIndex + 1]){
+            heap[parentIndex] = heap[childIndex];
+            heap[childIndex] = temp;
+            parentIndex = childIndex;
+        }
+        else{
+            heap[parentIndex] = heap[childIndex + 1];
+            heap[childIndex + 1] = temp;
+            parentIndex = childIndex + 1;
+        }
+        childIndex = (parentIndex * 2) + 1;
+        if(childIndex >= size)
+            break;
+    }
+    return smallest;
+}
+
+void print(int heap[], size_t size){
+    int i;
+    for(i = 0; i < size; ++i)
+        printf("%d ", heap[i]);
+}
+
+int checkHeap(int heap[], size_t size){
+    int i, childIndex = 1, isMalformed = 0;
+    for(i = 0; i < size; ++i){
+        if(childIndex <= (size - 1) && heap[i] > heap[childIndex])
+            isMalformed = 1;
+        if((childIndex + 1) <= (size - 1) && heap[i] > heap[childIndex + 1])
+            isMalformed = 1;
+        childIndex = ((i + 1) * 2) + 1;
+    }
+    return isMalformed;
+}
+
+void fillArray(int data[], size_t size){
+    int i;
+    srand(time(NULL));
+    for(i = 0; i < size; ++i)
+        data[i] = 1 + rand() % 400;
+}
+
+int checkAscending(int data[], size_t size){
+    int i, unordered = 0;
+    for(i = 0; i < (size - 1); ++i){
+        if(data[i] > data[i + 1])
+            unordered = 1;
+    }
+    return unordered;
+}
+
+void writeInts(const char *filename, size_t size){
+    srand(time(NULL));
+    FILE *fpt = fopen(filename, "w");
+    if(fpt == NULL){
+        printf("File could not be opened. Exiting.");
+        exit(1);
+    }
+    else{
+        int i;
+        for(i = 0; i < size; ++i){
+            int nextInt = 1 + rand() % 700;
+            fprintf(fpt, "%d ", nextInt);
+        }
+        fclose(fpt);
+    }
+}
+
+void readInts(const char *filename, int data[], size_t size){
+    FILE *fpt = fopen(filename, "r");
+    if(fpt == NULL){
+        printf("File could not be opened. Exiting.");
+        exit(1);
+    }
+    else{
+        int i;
+        for(i = 0; i < size; ++i)
+            fscanf(fpt, "%d", &data[i]);
+        fclose(fpt);
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
