@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#TESTING
+
 void enqueue(int data[], int heap[], size_t size);
 void print(int heap[], size_t size);
 int checkHeap(int heap[], size_t size);
